@@ -503,7 +503,8 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
                 </div>
                 <div className="space-y-0.5">
                    <p className="text-[10px] font-bold text-game-success uppercase tracking-widest bg-game-success/10 px-2 py-0.5 rounded-full inline-block border border-game-success/20">Best Deal Found</p>
-                   <p className="text-3xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 animate-shimmer bg-[length:200%_auto] text-transparent bg-clip-text tracking-tight drop-shadow-sm">{cheapestRetailer.price}</p>
+                   {/* FIXED: Removed gradient text to ensure black text in light mode */}
+                   <p className="text-3xl font-black text-game-text tracking-tight drop-shadow-sm">{cheapestRetailer.price}</p>
                    <p className="text-[10px] text-game-muted uppercase font-bold tracking-wide">at {cheapestRetailer.retailer}</p>
                 </div>
              </div>
