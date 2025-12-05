@@ -329,9 +329,12 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
   }, [data.estimatedValueRange]);
 
   const handleShare = async () => {
+    const bestPrice = cheapestRetailer ? `${cheapestRetailer.price} at ${cheapestRetailer.retailer}` : 'N/A';
+    const shareText = `SnapScout UK Result:\n📦 Item: ${data.productName}\n💷 Value: ${data.estimatedValueRange}\n🏆 Best Deal: ${bestPrice}\n✨ Rarity: ${data.rarityTier}`;
+
     const shareData = {
-      title: data.productName,
-      text: `Found this item: ${data.productName} (${data.rarityTier}) - Value: ${data.estimatedValueRange}`,
+      title: `SnapScout: ${data.productName}`,
+      text: shareText,
       url: window.location.href,
     };
 
@@ -343,7 +346,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
       }
     } else {
         // Fallback to WhatsApp direct link
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareData.text} ${shareData.url}`)}`;
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText}\n\nCheck it out: ${window.location.href}`)}`;
         window.open(whatsappUrl, '_blank');
     }
   };
@@ -504,7 +507,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
                 <div className="space-y-0.5">
                    <p className="text-[10px] font-bold text-game-success uppercase tracking-widest bg-game-success/10 px-2 py-0.5 rounded-full inline-block border border-game-success/20">Best Deal Found</p>
                    {/* FIXED: Removed gradient text to ensure black text in light mode */}
-                   <p className="text-3xl font-black text-game-text tracking-tight drop-shadow-sm">{cheapestRetailer.price}</p>
+                   <p className="text-3xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 animate-shimmer text-transparent bg-clip-text tracking-tight drop-shadow-sm">{cheapestRetailer.price}</p>
                    <p className="text-[10px] text-game-muted uppercase font-bold tracking-wide">at {cheapestRetailer.retailer}</p>
                 </div>
              </div>
