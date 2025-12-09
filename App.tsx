@@ -4,7 +4,10 @@ import { ResultsView } from './components/ResultsView';
 import { SavedItems } from './components/SavedItems';
 import { analyzeImage, analyzeText, fileToBase64 } from './services/geminiService';
 import { AnalysisResult, LoadingState } from './types';
-import { ScanLine, AlertCircle, Gamepad2, Settings, X, Trash2, FileText, ShieldCheck, Sun, Moon, Info } from './components/IconComponents';
+import { 
+  ScanLine, AlertCircle, Gamepad2, Settings, X, Trash2, FileText, 
+  ShieldCheck, Sun, Moon, Info, Camera, Zap, Trophy, ChevronRight 
+} from './components/IconComponents';
 
 const STORAGE_KEY = 'snapscout_uk_loot_v2';
 const XP_KEY = 'snapscout_user_xp';
@@ -23,7 +26,148 @@ const LOADING_STEPS = [
   "Mission Ready."
 ];
 
+// --- LANDING PAGE COMPONENT ---
+const LandingPage = ({ onStart }: { onStart: () => void }) => (
+  <div className="min-h-screen bg-game-bg flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans text-game-text selection:bg-game-primary selection:text-white">
+    {/* Background effects */}
+    <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-game-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div className="absolute bottom-[-20%] right-[-20%] w-[80%] h-[80%] bg-game-secondary/10 rounded-full blur-[120px] pointer-events-none"></div>
+    
+    <div className="max-w-6xl w-full z-10 space-y-16 animate-pop-in">
+        {/* Hero Section */}
+        <div className="text-center space-y-8 mt-10">
+            <div className="inline-block relative">
+               <h1 className="text-6xl md:text-8xl font-black text-game-text tracking-tighter mb-2 relative z-10">
+                 SNAP<span className="text-transparent bg-clip-text bg-gradient-to-r from-game-primary to-game-accent">SCOUT</span>
+               </h1>
+               <div className="absolute -inset-4 bg-game-primary/20 blur-3xl rounded-full opacity-50 z-0"></div>
+            </div>
+            
+            <p className="text-xl md:text-2xl text-game-muted max-w-2xl mx-auto font-light leading-relaxed">
+              The Ultimate <span className="text-game-text font-bold">UK Price Tracker</span>. <br/>
+              Identify items instantly. Compare High Street prices. Unlock hidden value.
+            </p>
+            
+            <button
+              onClick={onStart}
+              className="group relative inline-flex items-center gap-4 px-10 py-5 bg-game-primary text-white rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,0,128,0.4)] hover:shadow-[0_0_50px_rgba(255,0,128,0.6)] text-lg"
+            >
+               Initiate Scan <ScanLine size={24} className="group-hover:rotate-180 transition-transform" />
+            </button>
+        </div>
+
+        {/* How it works / Screenshots */}
+        <div className="space-y-8">
+            <div className="flex items-center justify-center gap-4 opacity-70">
+                <div className="h-px bg-white/20 w-12"></div>
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-game-muted">System Workflow</span>
+                <div className="h-px bg-white/20 w-12"></div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                {/* Step 1: Scan */}
+                <div className="group relative">
+                   <div className="absolute inset-0 bg-game-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl"></div>
+                   <div className="bg-game-card border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300">
+                       <div className="aspect-[9/16] bg-game-bg rounded-2xl border border-white/10 mb-6 relative overflow-hidden flex flex-col shadow-inner">
+                          {/* Mock UI: Camera */}
+                          <div className="absolute top-4 inset-x-4 flex justify-between">
+                             <div className="h-1 w-8 bg-white/10 rounded-full"></div>
+                             <div className="h-4 w-4 rounded-full border border-game-success/50"></div>
+                          </div>
+                          <div className="flex-1 flex items-center justify-center relative">
+                             <div className="absolute inset-8 border-2 border-dashed border-white/20 rounded-xl"></div>
+                             <Camera size={48} className="text-game-muted opacity-50" />
+                          </div>
+                          <div className="bg-game-surface/50 p-4 backdrop-blur-md border-t border-white/5">
+                             <div className="h-12 w-12 mx-auto rounded-full border-4 border-white/20"></div>
+                          </div>
+                       </div>
+                       <h3 className="text-xl font-black text-game-text mb-2 flex items-center gap-3">
+                         <span className="flex items-center justify-center w-8 h-8 rounded-full bg-game-surface border border-white/10 text-sm">1</span>
+                         Snap Photo
+                       </h3>
+                       <p className="text-sm text-game-muted leading-relaxed">
+                         Take a picture of any product, gadget, or barcode. Our neural engine locks onto the target instantly.
+                       </p>
+                   </div>
+                </div>
+
+                {/* Step 2: Analyze */}
+                <div className="group relative">
+                   <div className="absolute inset-0 bg-game-accent/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl"></div>
+                   <div className="bg-game-card border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 delay-100">
+                       <div className="aspect-[9/16] bg-game-bg rounded-2xl border border-white/10 mb-6 relative overflow-hidden flex flex-col items-center justify-center shadow-inner gap-4 p-6">
+                          {/* Mock UI: Analysis */}
+                          <div className="w-16 h-16 rounded-full border-2 border-t-game-accent border-r-transparent border-b-game-accent border-l-transparent animate-spin"></div>
+                          <div className="space-y-2 w-full">
+                            <div className="h-1.5 w-full bg-game-surface rounded-full overflow-hidden">
+                              <div className="h-full w-2/3 bg-game-accent animate-pulse"></div>
+                            </div>
+                            <div className="flex justify-between text-[8px] font-mono text-game-accent">
+                               <span>SCANNING...</span>
+                               <span>84%</span>
+                            </div>
+                          </div>
+                          <Zap size={32} className="text-game-accent absolute opacity-20" />
+                       </div>
+                       <h3 className="text-xl font-black text-game-text mb-2 flex items-center gap-3">
+                         <span className="flex items-center justify-center w-8 h-8 rounded-full bg-game-surface border border-white/10 text-sm">2</span>
+                         AI Analysis
+                       </h3>
+                       <p className="text-sm text-game-muted leading-relaxed">
+                         Gemini Vision AI identifies the exact model, variant, and specs. It even rates the item's rarity.
+                       </p>
+                   </div>
+                </div>
+
+                {/* Step 3: Results */}
+                <div className="group relative">
+                   <div className="absolute inset-0 bg-game-success/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl"></div>
+                   <div className="bg-game-card border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 delay-200">
+                       <div className="aspect-[9/16] bg-game-bg rounded-2xl border border-white/10 mb-6 relative overflow-hidden flex flex-col shadow-inner">
+                          {/* Mock UI: Results */}
+                          <div className="h-1/3 bg-game-surface/30 p-4 flex flex-col justify-end">
+                             <div className="text-xs text-game-success font-bold uppercase tracking-wider mb-1">Best Deal Found</div>
+                             <div className="text-3xl font-black text-game-text">£45.00</div>
+                          </div>
+                          <div className="p-3 space-y-2">
+                             <div className="h-8 bg-game-surface/50 rounded-lg border border-white/5 flex items-center px-2 gap-2">
+                                <div className="h-4 w-4 bg-white/10 rounded"></div>
+                                <div className="h-2 w-16 bg-white/10 rounded"></div>
+                                <div className="ml-auto h-3 w-8 bg-game-success/20 rounded"></div>
+                             </div>
+                             <div className="h-8 bg-game-surface/20 rounded-lg border border-white/5 flex items-center px-2 gap-2">
+                                <div className="h-4 w-4 bg-white/10 rounded"></div>
+                                <div className="h-2 w-12 bg-white/10 rounded"></div>
+                                <div className="ml-auto h-3 w-10 bg-white/10 rounded"></div>
+                             </div>
+                          </div>
+                          <div className="mt-auto p-3 bg-game-primary/10 border-t border-game-primary/20">
+                             <div className="text-[10px] text-game-primary font-bold uppercase text-center">Rarity: Rare</div>
+                          </div>
+                       </div>
+                       <h3 className="text-xl font-black text-game-text mb-2 flex items-center gap-3">
+                         <span className="flex items-center justify-center w-8 h-8 rounded-full bg-game-surface border border-white/10 text-sm">3</span>
+                         Compare & Save
+                       </h3>
+                       <p className="text-sm text-game-muted leading-relaxed">
+                         See live prices from Amazon, eBay, and local shops. Get buying tips and historical value data.
+                       </p>
+                   </div>
+                </div>
+            </div>
+        </div>
+        
+        <div className="text-center pb-10">
+           <p className="text-xs text-game-muted font-mono opacity-50">v2.2.0 // UK REGION // SECURE</p>
+        </div>
+    </div>
+  </div>
+);
+
 function App() {
+  const [showLanding, setShowLanding] = useState(true);
   const [loadingState, setLoadingState] = useState<LoadingState>(LoadingState.IDLE);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -38,6 +182,12 @@ function App() {
   const [loadingStep, setLoadingStep] = useState(0);
 
   useEffect(() => {
+    // Check for landing page preference
+    const hasVisited = sessionStorage.getItem('snapscout_visited');
+    if (hasVisited) {
+       setShowLanding(false);
+    }
+    
     if (!process.env.API_KEY) {
       setApiKeyMissing(true);
     }
@@ -72,6 +222,11 @@ function App() {
       return () => clearInterval(interval);
     }
   }, [loadingState]);
+
+  const handleStartApp = () => {
+    setShowLanding(false);
+    sessionStorage.setItem('snapscout_visited', 'true');
+  };
 
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -174,6 +329,11 @@ function App() {
         </div>
       </div>
     );
+  }
+
+  // RENDER LANDING PAGE IF ACTIVE
+  if (showLanding) {
+    return <LandingPage onStart={handleStartApp} />;
   }
 
   return (
