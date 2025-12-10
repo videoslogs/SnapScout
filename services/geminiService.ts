@@ -88,10 +88,12 @@ const ANALYSIS_SCHEMA = {
         properties: {
           name: { type: Type.STRING },
           reason: { type: Type.STRING },
-          estimatedPrice: { type: Type.STRING }
+          estimatedPrice: { type: Type.STRING },
+          imageUrl: { type: Type.STRING, description: "URL of a product image if available." },
+          url: { type: Type.STRING, description: "Google Shopping search URL for this related item." }
         }
       },
-      description: "List of 4 similar or alternative products available in the UK."
+      description: "List of 4 similar or alternative products available in the UK with images and search links."
     }
   },
   required: ["productName", "description", "retailers", "relatedProducts", "specs", "rarityTier", "buyingTip"]
@@ -141,7 +143,8 @@ export const analyzeImage = async (base64Image: string, mimeType: string = "imag
          - Prices in GBP (£) from major UK retailers AND Local Shops (CEX, Cash Converters).
          - IMPORTANT: For the 'url' field, provide a SEARCH URL (e.g., 'https://www.amazon.co.uk/s?k=Product+Name') to ensure the link works.
          - Provide a quick buying tip.
-         - Provide FULL specs (attributes) where possible.`
+         - Provide FULL specs (attributes) where possible.
+         - Provide 4 Similar Items with images and search links.`
       : `Identify this EXACT item for a UK-based shopper.
             
          Gamification Mode: On.
@@ -153,7 +156,8 @@ export const analyzeImage = async (base64Image: string, mimeType: string = "imag
          6. Provide 3 Pros (Buffs) and 3 Cons (Debuffs).
          7. Provide a quick buying tip.
          8. Provide COMPREHENSIVE Attributes/Specs (fill as many fields as relevant).
-         9. In retailer offers, include a minimal comparison price for a main competitor brand.`;
+         9. In retailer offers, include a minimal comparison price for a main competitor brand.
+         10. Provide 4 Similar Items with valid image URLs and search links.`;
 
     const response = await retryWithBackoff<GenerateContentResponse>(() => ai.models.generateContent({
       model: modelId,
@@ -209,6 +213,7 @@ export const analyzeText = async (query: string): Promise<AnalysisResult> => {
               4. IMPORTANT: For the 'url' field, provide SEARCH URLs (e.g. 'https://www.amazon.co.uk/s?k=...') to guarantee working links.
               5. Provide a quick buying tip.
               6. Fill all technical specs.
+              7. Provide 4 Similar Items with images and search links.
               `
             }
           ]

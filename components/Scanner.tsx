@@ -218,14 +218,19 @@ export const Scanner: React.FC<ScannerProps> = ({ onImageSelect, onTextSearch, i
                   </button>
                 </form>
 
-                {/* Barcode Scan Button */}
+                {/* Barcode Scan Button with Visual Indicator */}
                 <button 
                   onClick={() => barcodeInputRef.current?.click()}
                   className="flex items-center gap-2 bg-game-surface border border-white/10 hover:border-game-accent hover:bg-game-bg px-2.5 py-2 rounded-xl text-game-muted hover:text-game-text transition-all active:scale-95 group/barcode relative overflow-hidden shrink-0"
                   title="Scan Barcode"
                 >
+                  {/* Internal Red Laser Scanning Animation */}
+                  <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
+                      <div className="w-full h-[1px] bg-red-500 shadow-[0_0_4px_#ef4444] absolute top-0 animate-[scan_2s_ease-in-out_infinite]" style={{ animationName: 'scan' }}></div>
+                  </div>
+                  
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover/barcode:animate-shimmer pointer-events-none"></div>
-                  <Barcode size={18} className="group-hover/barcode:text-game-accent" />
+                  <Barcode size={18} className="group-hover/barcode:text-game-accent relative z-10" />
                 </button>
                 <input 
                   type="file" 
@@ -238,6 +243,17 @@ export const Scanner: React.FC<ScannerProps> = ({ onImageSelect, onTextSearch, i
           </div>
         </div>
       </div>
+      
+      {/* Inline style for keyframes if not present in global CSS */}
+      <style>{`
+        @keyframes scan {
+          0% { top: 10%; opacity: 0; }
+          15% { opacity: 1; }
+          50% { top: 90%; }
+          85% { opacity: 1; }
+          100% { top: 10%; opacity: 0; }
+        }
+      `}</style>
 
       {/* Seasonal Sales Widget */}
       <div className="bg-game-card/50 p-1 rounded-2xl border border-white/5 shadow-sm hover:bg-game-card/80 transition-colors relative overflow-hidden group">

@@ -19,6 +19,8 @@ export interface RelatedProduct {
   name: string;
   reason: string;
   estimatedPrice: string;
+  imageUrl?: string;
+  url?: string;
 }
 
 export interface ProductSpecs {

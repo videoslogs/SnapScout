@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { AnalysisResult, RarityTier, RetailerPrice } from '../types';
+import { AnalysisResult, RarityTier, RetailerPrice, RelatedProduct } from '../types';
 import { Button } from './Button';
 import { 
   TrendingUp, Check, X, Tag, Share2, ScanLine, Bookmark, 
@@ -175,6 +175,64 @@ const RetailerRow: React.FC<{ retailer: RetailerPrice; isCheapest: boolean }> = 
           </div>
       </div>
     </a>
+  );
+};
+
+// Similar Product Card with Image Support
+const SimilarProductCard: React.FC<{ item: RelatedProduct, isChecked: boolean, onToggle: () => void }> = ({ item, isChecked, onToggle }) => {
+  const [imgError, setImgError] = useState(false);
+  
+  return (
+    <div 
+      className={`min-w-[180px] snap-center flex flex-col justify-between bg-game-card border p-3 rounded-xl relative overflow-hidden transition-all group hover:shadow-lg ${
+        isChecked 
+          ? 'border-game-primary/50 bg-game-primary/5' 
+          : 'border-white/10 hover:border-game-accent/50'
+      }`}
+    >
+      {/* Image Area */}
+      <a 
+        href={item.url || `https://www.google.com/search?q=${encodeURIComponent(item.name)}&tbm=shop`} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="block relative aspect-square bg-white/5 rounded-lg mb-3 overflow-hidden group/img cursor-pointer"
+      >
+        {!imgError && item.imageUrl ? (
+          <img 
+            src={item.imageUrl} 
+            alt={item.name} 
+            className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-110"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-game-muted">
+            <Package size={24} className="opacity-50" />
+          </div>
+        )}
+        
+        {/* External Link Overlay */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+           <span className="flex items-center gap-1 text-[10px] font-bold text-white uppercase tracking-wider bg-black/50 px-2 py-1 rounded-full border border-white/20">
+              View Item <ExternalLink size={10} />
+           </span>
+        </div>
+      </a>
+
+      <div onClick={onToggle} className="cursor-pointer">
+          <div className="flex justify-between items-start gap-2 mb-1">
+             <p className={`font-bold text-xs leading-tight line-clamp-2 ${isChecked ? 'text-game-primary line-through' : 'text-game-text'}`}>
+                 {item.name}
+             </p>
+             <div className={`shrink-0 transition-colors ${isChecked ? 'text-game-primary' : 'text-game-muted group-hover:text-game-text'}`}>
+               {isChecked ? <CheckSquare size={16} /> : <Square size={16} />}
+             </div>
+          </div>
+          <p className="text-[9px] text-game-muted leading-tight line-clamp-2 mb-2 min-h-[2.5em]">{item.reason}</p>
+          <div className="pt-2 border-t border-white/5 text-right">
+              <p className="text-[10px] font-black text-game-accent">{item.estimatedPrice}</p>
+          </div>
+      </div>
+    </div>
   );
 };
 
@@ -799,28 +857,12 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
                 <h4 className="text-xs font-bold text-game-text uppercase tracking-widest border-b border-white/5 pb-2 mb-3">View Similar Items</h4>
                 <div className="flex overflow-x-auto gap-3 pb-4 no-scrollbar snap-x snap-mandatory">
                   {data.relatedProducts.map((item, index) => (
-                    <div 
+                    <SimilarProductCard 
                       key={index} 
-                      onClick={() => toggleCheck(index)}
-                      className={`min-w-[160px] snap-center flex flex-col justify-between p-3 rounded-xl border cursor-pointer transition-all ${
-                        checkedItems[index] 
-                          ? 'bg-game-primary/10 border-game-primary/50' 
-                          : 'bg-game-bg/50 border-white/5 hover:bg-game-surface hover:border-game-accent/50'
-                      }`}
-                    >
-                      <div>
-                          <div className={`text-game-muted transition-colors mb-2 ${checkedItems[index] ? 'text-game-primary' : ''}`}>
-                            {checkedItems[index] ? <CheckSquare size={16} /> : <Square size={16} />}
-                          </div>
-                          <p className={`font-bold text-xs leading-tight mb-1 ${checkedItems[index] ? 'text-game-primary line-through' : 'text-game-text'}`}>
-                              {item.name}
-                          </p>
-                          <p className="text-[9px] text-game-muted leading-tight">{item.reason}</p>
-                      </div>
-                      <div className="mt-3 pt-2 border-t border-white/5 text-right">
-                          <p className="text-[10px] font-black text-game-accent">{item.estimatedPrice}</p>
-                      </div>
-                    </div>
+                      item={item} 
+                      isChecked={!!checkedItems[index]} 
+                      onToggle={() => toggleCheck(index)} 
+                    />
                   ))}
                 </div>
             </div>
@@ -950,7 +992,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
                   <Mail size={16} /> Report Issue
               </button>
           </div>
-          <p className="text-[10px] text-game-muted mt-4 opacity-50">Feedback sent to SnapScout Team</p>
+          <p className="text-[10px] text-game-muted mt-4 opacity-50">Feedback sent to SnapScout Team "newshade87@gmail.com"</p>
       </div>
 
     </div>
