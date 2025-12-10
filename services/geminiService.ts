@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { AnalysisResult } from "../types";
 
 // Helper to convert file to base64
@@ -100,6 +100,30 @@ const ANALYSIS_SCHEMA = {
 // Generate a simple unique ID
 const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
 
+// Retry function with exponential backoff
+async function retryWithBackoff<T>(
+  operation: () => Promise<T>,
+  retries: number = 3,
+  delay: number = 2000
+): Promise<T> {
+  try {
+    return await operation();
+  } catch (error: any) {
+    // Check for 503 Service Unavailable or "overloaded" message
+    const isOverloaded = 
+      error?.status === 503 || 
+      error?.code === 503 || 
+      (error?.message && error.message.toLowerCase().includes("overloaded"));
+
+    if (retries > 0 && isOverloaded) {
+      console.warn(`Gemini API overloaded. Retrying in ${delay}ms... (Attempts left: ${retries})`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return retryWithBackoff(operation, retries - 1, delay * 2);
+    }
+    throw error;
+  }
+}
+
 export const analyzeImage = async (base64Image: string, mimeType: string = "image/jpeg", isBarcode: boolean = false): Promise<AnalysisResult> => {
   const ai = getGenAI();
   const modelId = "gemini-2.5-flash";
@@ -131,7 +155,7 @@ export const analyzeImage = async (base64Image: string, mimeType: string = "imag
          8. Provide COMPREHENSIVE Attributes/Specs (fill as many fields as relevant).
          9. In retailer offers, include a minimal comparison price for a main competitor brand.`;
 
-    const response = await ai.models.generateContent({
+    const response = await retryWithBackoff<GenerateContentResponse>(() => ai.models.generateContent({
       model: modelId,
       contents: {
         parts: [
@@ -149,7 +173,7 @@ export const analyzeImage = async (base64Image: string, mimeType: string = "imag
         responseSchema: ANALYSIS_SCHEMA,
         temperature: 0.3, 
       }
-    });
+    }));
 
     const text = response.text;
     if (!text) throw new Error("No data returned from Gemini");
@@ -171,7 +195,7 @@ export const analyzeText = async (query: string): Promise<AnalysisResult> => {
     const modelId = "gemini-2.5-flash";
   
     try {
-      const response = await ai.models.generateContent({
+      const response = await retryWithBackoff<GenerateContentResponse>(() => ai.models.generateContent({
         model: modelId,
         contents: {
           parts: [
@@ -193,7 +217,7 @@ export const analyzeText = async (query: string): Promise<AnalysisResult> => {
           responseMimeType: "application/json",
           responseSchema: ANALYSIS_SCHEMA,
         }
-      });
+      }));
   
       const text = response.text;
       if (!text) throw new Error("No data returned from Gemini");
