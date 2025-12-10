@@ -102,11 +102,11 @@ const ANALYSIS_SCHEMA = {
 // Generate a simple unique ID
 const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
 
-// Retry function with exponential backoff
+// Retry function with exponential backoff and special handling for 429s
 async function retryWithBackoff<T>(
   operation: () => Promise<T>,
-  retries: number = 5,
-  delay: number = 2000
+  retries: number = 6, // Increased to cover 60s+ window
+  delay: number = 4000 // Start with 4s base
 ): Promise<T> {
   try {
     return await operation();
@@ -121,12 +121,25 @@ async function retryWithBackoff<T>(
       msg.includes("overloaded") || 
       msg.includes("quota") ||
       msg.includes("resource_exhausted") ||
-      msg.includes("too many requests");
+      msg.includes("too many requests") ||
+      msg.includes("limit");
 
     if (retries > 0 && isRetryable) {
-      console.warn(`Gemini API busy (${status}). Retrying in ${delay}ms... (Attempts left: ${retries})`);
-      await new Promise((resolve) => setTimeout(resolve, delay));
-      return retryWithBackoff(operation, retries - 1, delay * 2);
+      let waitTime = delay;
+      
+      // If it's a Quota error (429), we likely need a significant wait (e.g. ~40-60s)
+      // We start with a much higher base wait for these to avoid wasting retries
+      if (status === 429 || msg.includes("quota") || msg.includes("resource_exhausted")) {
+         waitTime = Math.max(delay, 10000); // Minimum 10s wait for quota issues
+      }
+
+      console.warn(`Gemini API busy/limit (${status}). Retrying in ${waitTime/1000}s... (Attempts left: ${retries})`);
+      
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
+      
+      // Use 1.5x multiplier to cover ground without exploding into 5-minute waits
+      const nextDelay = Math.min(waitTime * 1.5, 60000); 
+      return retryWithBackoff(operation, retries - 1, nextDelay);
     }
     throw error;
   }
@@ -143,9 +156,8 @@ const handleGeminiError = (error: any): never => {
             if (match) {
                 const parsed = JSON.parse(match[0]);
                 if (parsed.error) {
-                    // Check for specific quota error
                     if (parsed.error.code === 429 || parsed.error.status === "RESOURCE_EXHAUSTED") {
-                        throw new Error("Usage limit reached (Free Tier). Please wait 60s and try again.");
+                        throw new Error("Free tier usage limit reached. Please wait 60 seconds and try again.");
                     }
                     if (parsed.error.message) {
                         throw new Error(parsed.error.message);
@@ -159,7 +171,7 @@ const handleGeminiError = (error: any): never => {
     
     // Fallback text checks
     if (msg.includes("429") || msg.toLowerCase().includes("quota") || msg.toLowerCase().includes("resource_exhausted")) {
-        throw new Error("Usage limit reached. Please wait a minute before scanning again.");
+        throw new Error("Free tier usage limit reached. Please wait 60 seconds and try again.");
     }
     
     if (msg.includes("503") || msg.toLowerCase().includes("overloaded")) {
