@@ -28,48 +28,50 @@ const LOADING_STEPS = [
 
 // --- LANDING PAGE COMPONENT ---
 const LandingPage = ({ onStart }: { onStart: () => void }) => (
-  <div className="min-h-screen bg-game-bg flex flex-col items-center justify-center p-6 relative overflow-hidden font-sans text-game-text selection:bg-game-primary selection:text-white">
+  <div className="min-h-[100dvh] bg-game-bg flex flex-col items-center justify-start md:justify-center p-4 md:p-6 relative overflow-y-auto overflow-x-hidden font-sans text-game-text selection:bg-game-primary selection:text-white scroll-smooth">
     {/* Background effects */}
     <div className="absolute top-[-20%] left-[-20%] w-[80%] h-[80%] bg-game-primary/10 rounded-full blur-[120px] pointer-events-none"></div>
     <div className="absolute bottom-[-20%] right-[-20%] w-[80%] h-[80%] bg-game-secondary/10 rounded-full blur-[120px] pointer-events-none"></div>
     
-    <div className="max-w-6xl w-full z-10 space-y-16 animate-pop-in">
+    <div className="max-w-6xl w-full z-10 space-y-6 md:space-y-16 animate-pop-in pb-8 pt-4 md:pt-0">
         {/* Hero Section */}
-        <div className="text-center space-y-8 mt-10">
+        <div className="text-center space-y-6 md:space-y-8 mt-2 md:mt-10">
             <div className="inline-block relative">
-               <h1 className="text-6xl md:text-8xl font-black text-game-text tracking-tighter mb-2 relative z-10">
+               <h1 className="text-5xl md:text-8xl font-black text-game-text tracking-tighter mb-2 relative z-10">
                  SNAP<span className="text-transparent bg-clip-text bg-gradient-to-r from-game-primary to-game-accent">SCOUT</span>
                </h1>
                <div className="absolute -inset-4 bg-game-primary/20 blur-3xl rounded-full opacity-50 z-0"></div>
             </div>
             
-            <p className="text-xl md:text-2xl text-game-muted max-w-2xl mx-auto font-light leading-relaxed">
-              The Ultimate <span className="text-game-text font-bold">UK Price Tracker</span>. <br/>
-              Identify items instantly. Compare High Street prices. Unlock hidden value.
+            <p className="text-lg md:text-2xl text-game-muted max-w-2xl mx-auto font-light leading-relaxed px-2">
+              The Ultimate <span className="text-game-text font-bold">UK Price Tracker</span>. <br className="hidden md:inline"/>
+              Identify items instantly. Compare prices.
             </p>
             
             <button
               onClick={onStart}
-              className="group relative inline-flex items-center gap-4 px-10 py-5 bg-game-primary text-white rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,0,128,0.4)] hover:shadow-[0_0_50px_rgba(255,0,128,0.6)] text-lg"
+              className="group relative inline-flex items-center gap-3 px-8 py-4 md:px-10 md:py-5 bg-game-primary text-white rounded-2xl font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_30px_rgba(255,0,128,0.4)] hover:shadow-[0_0_50px_rgba(255,0,128,0.6)] text-base md:text-lg"
             >
-               Initiate Scan <ScanLine size={24} className="group-hover:rotate-180 transition-transform" />
+               Initiate Scan <ScanLine size={20} className="group-hover:rotate-180 transition-transform" />
             </button>
         </div>
 
         {/* How it works / Screenshots */}
-        <div className="space-y-8">
+        <div className="space-y-4 md:space-y-8">
             <div className="flex items-center justify-center gap-4 opacity-70">
-                <div className="h-px bg-white/20 w-12"></div>
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-game-muted">System Workflow</span>
-                <div className="h-px bg-white/20 w-12"></div>
+                <div className="h-px bg-white/20 w-8 md:w-12"></div>
+                <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-game-muted">System Workflow</span>
+                <div className="h-px bg-white/20 w-8 md:w-12"></div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+            {/* Mobile: Horizontal Scroll | Desktop: Grid */}
+            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-12 overflow-x-auto snap-x snap-mandatory pb-4 md:pb-0 no-scrollbar px-1 -mx-4 md:mx-0 md:px-0">
+                
                 {/* Step 1: Scan */}
-                <div className="group relative">
+                <div className="group relative min-w-[85vw] md:min-w-0 snap-center pl-4 md:pl-0">
                    <div className="absolute inset-0 bg-game-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl"></div>
-                   <div className="bg-game-card border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 text-left">
-                       <div className="aspect-[9/16] bg-game-bg rounded-2xl border border-white/10 mb-6 relative overflow-hidden flex flex-col shadow-inner">
+                   <div className="bg-game-card border border-white/10 rounded-3xl p-5 md:p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 text-left h-full">
+                       <div className="aspect-[16/9] md:aspect-[9/16] bg-game-bg rounded-2xl border border-white/10 mb-4 md:mb-6 relative overflow-hidden flex flex-col shadow-inner">
                           {/* Mock UI: Camera */}
                           <div className="absolute top-4 inset-x-4 flex justify-between">
                              <div className="h-1 w-8 bg-white/10 rounded-full"></div>
@@ -77,124 +79,110 @@ const LandingPage = ({ onStart }: { onStart: () => void }) => (
                           </div>
                           <div className="flex-1 flex items-center justify-center relative">
                              <div className="absolute inset-8 border-2 border-dashed border-white/20 rounded-xl"></div>
-                             <Camera size={48} className="text-game-muted opacity-50" />
-                          </div>
-                          <div className="bg-game-surface/50 p-4 backdrop-blur-md border-t border-white/5">
-                             <div className="h-12 w-12 mx-auto rounded-full border-4 border-white/20"></div>
+                             <Camera size={32} className="text-game-muted opacity-50" />
                           </div>
                        </div>
-                       <h3 className="text-xl font-black text-game-text mb-2 flex items-center gap-3">
-                         <span className="flex items-center justify-center w-8 h-8 rounded-full bg-game-surface border border-white/10 text-sm">1</span>
+                       <h3 className="text-lg md:text-xl font-black text-game-text mb-2 flex items-center gap-3">
+                         <span className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 rounded-full bg-game-surface border border-white/10 text-xs md:text-sm">1</span>
                          Snap Photo
                        </h3>
-                       <p className="text-sm text-game-muted leading-relaxed">
-                         Take a picture of any product, gadget, or barcode. Our neural engine locks onto the target instantly.
+                       <p className="text-xs md:text-sm text-game-muted leading-relaxed">
+                         Take a picture of any product or barcode. Neural engine locks on instantly.
                        </p>
                    </div>
                 </div>
 
                 {/* Step 2: Analyze */}
-                <div className="group relative">
+                <div className="group relative min-w-[85vw] md:min-w-0 snap-center">
                    <div className="absolute inset-0 bg-game-accent/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl"></div>
-                   <div className="bg-game-card border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 delay-100 text-left">
-                       <div className="aspect-[9/16] bg-game-bg rounded-2xl border border-white/10 mb-6 relative overflow-hidden flex flex-col items-center justify-center shadow-inner gap-4 p-6">
+                   <div className="bg-game-card border border-white/10 rounded-3xl p-5 md:p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 delay-100 text-left h-full">
+                       <div className="aspect-[16/9] md:aspect-[9/16] bg-game-bg rounded-2xl border border-white/10 mb-4 md:mb-6 relative overflow-hidden flex flex-col items-center justify-center shadow-inner gap-4 p-6">
                           {/* Mock UI: Analysis */}
-                          <div className="w-16 h-16 rounded-full border-2 border-t-game-accent border-r-transparent border-b-game-accent border-l-transparent animate-spin"></div>
-                          <div className="space-y-2 w-full">
-                            <div className="h-1.5 w-full bg-game-surface rounded-full overflow-hidden">
+                          <div className="w-12 h-12 md:w-16 md:h-16 rounded-full border-2 border-t-game-accent border-r-transparent border-b-game-accent border-l-transparent animate-spin"></div>
+                          <div className="space-y-2 w-full max-w-[100px]">
+                            <div className="h-1 w-full bg-game-surface rounded-full overflow-hidden">
                               <div className="h-full w-2/3 bg-game-accent animate-pulse"></div>
                             </div>
-                            <div className="flex justify-between text-[8px] font-mono text-game-accent">
-                               <span>SCANNING...</span>
-                               <span>84%</span>
-                            </div>
                           </div>
-                          <Zap size={32} className="text-game-accent absolute opacity-20" />
+                          <Zap size={24} className="text-game-accent absolute opacity-20" />
                        </div>
-                       <h3 className="text-xl font-black text-game-text mb-2 flex items-center gap-3">
-                         <span className="flex items-center justify-center w-8 h-8 rounded-full bg-game-surface border border-white/10 text-sm">2</span>
+                       <h3 className="text-lg md:text-xl font-black text-game-text mb-2 flex items-center gap-3">
+                         <span className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 rounded-full bg-game-surface border border-white/10 text-xs md:text-sm">2</span>
                          AI Analysis
                        </h3>
-                       <p className="text-sm text-game-muted leading-relaxed">
-                         Gemini Vision AI identifies the exact model, variant, and specs. It even rates the item's rarity.
+                       <p className="text-xs md:text-sm text-game-muted leading-relaxed">
+                         Gemini Vision AI identifies the model, specs, and rates rarity.
                        </p>
                    </div>
                 </div>
 
                 {/* Step 3: Results */}
-                <div className="group relative">
+                <div className="group relative min-w-[85vw] md:min-w-0 snap-center pr-4 md:pr-0">
                    <div className="absolute inset-0 bg-game-success/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl"></div>
-                   <div className="bg-game-card border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 delay-200 text-left">
-                       <div className="aspect-[9/16] bg-game-bg rounded-2xl border border-white/10 mb-6 relative overflow-hidden flex flex-col shadow-inner">
+                   <div className="bg-game-card border border-white/10 rounded-3xl p-5 md:p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 delay-200 text-left h-full">
+                       <div className="aspect-[16/9] md:aspect-[9/16] bg-game-bg rounded-2xl border border-white/10 mb-4 md:mb-6 relative overflow-hidden flex flex-col shadow-inner">
                           {/* Mock UI: Results */}
-                          <div className="h-1/3 bg-game-surface/30 p-4 flex flex-col justify-end">
-                             <div className="text-xs text-game-success font-bold uppercase tracking-wider mb-1">Best Deal Found</div>
-                             <div className="text-3xl font-black text-game-text">£45.00</div>
-                          </div>
-                          <div className="p-3 space-y-2">
-                             <div className="h-8 bg-game-surface/50 rounded-lg border border-white/5 flex items-center px-2 gap-2">
-                                <div className="h-4 w-4 bg-white/10 rounded"></div>
-                                <div className="h-2 w-16 bg-white/10 rounded"></div>
-                                <div className="ml-auto h-3 w-8 bg-game-success/20 rounded"></div>
-                             </div>
-                             <div className="h-8 bg-game-surface/20 rounded-lg border border-white/5 flex items-center px-2 gap-2">
-                                <div className="h-4 w-4 bg-white/10 rounded"></div>
-                                <div className="h-2 w-12 bg-white/10 rounded"></div>
-                                <div className="ml-auto h-3 w-10 bg-white/10 rounded"></div>
-                             </div>
-                          </div>
-                          <div className="mt-auto p-3 bg-game-primary/10 border-t border-game-primary/20">
-                             <div className="text-[10px] text-game-primary font-bold uppercase text-center">Rarity: Rare</div>
+                          <div className="h-full flex flex-col justify-center p-4 text-center">
+                             <div className="text-[10px] text-game-success font-bold uppercase tracking-wider mb-1">Best Deal</div>
+                             <div className="text-3xl font-black text-game-text mb-2">£45</div>
+                             <div className="h-6 w-24 bg-game-surface/50 mx-auto rounded border border-white/5"></div>
                           </div>
                        </div>
-                       <h3 className="text-xl font-black text-game-text mb-2 flex items-center gap-3">
-                         <span className="flex items-center justify-center w-8 h-8 rounded-full bg-game-surface border border-white/10 text-sm">3</span>
-                         Compare & Save
+                       <h3 className="text-lg md:text-xl font-black text-game-text mb-2 flex items-center gap-3">
+                         <span className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 rounded-full bg-game-surface border border-white/10 text-xs md:text-sm">3</span>
+                         Save Money
                        </h3>
-                       <p className="text-sm text-game-muted leading-relaxed">
-                         See live prices from Amazon, eBay, and local shops. Get buying tips and historical value data.
+                       <p className="text-xs md:text-sm text-game-muted leading-relaxed">
+                         Compare live prices from Amazon, eBay, and local shops.
                        </p>
                    </div>
                 </div>
             </div>
+            
+            {/* Mobile Scroll Indicator */}
+             <div className="flex md:hidden justify-center gap-1.5 opacity-30 py-2">
+                 <div className="w-1.5 h-1.5 rounded-full bg-game-text"></div>
+                 <div className="w-1.5 h-1.5 rounded-full bg-white/20"></div>
+                 <div className="w-1.5 h-1.5 rounded-full bg-white/20"></div>
+             </div>
         </div>
 
         {/* Testimonials Section */}
-        <div className="space-y-8 pb-12">
+        <div className="space-y-4 md:space-y-8 pb-8 md:pb-12">
             <div className="flex items-center justify-center gap-4 opacity-70">
-                <div className="h-px bg-white/20 w-12"></div>
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-game-muted">Field Reports</span>
-                <div className="h-px bg-white/20 w-12"></div>
+                <div className="h-px bg-white/20 w-8 md:w-12"></div>
+                <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-game-muted">Field Reports</span>
+                <div className="h-px bg-white/20 w-8 md:w-12"></div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="flex md:grid md:grid-cols-3 gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory pb-4 md:pb-0 no-scrollbar px-1 -mx-4 md:mx-0 md:px-0">
                {[
                  {
-                   text: "Found a rare vintage camera for £20 at a boot sale. SnapScout said it was worth £150. Sold it next day!",
+                   text: "Found a vintage camera for £20. Sold for £150!",
                    author: "Sarah J.",
                    role: "Reseller"
                  },
                  {
-                   text: "I use this in CEX all the time to check if trade-in prices are fair. Saved me loads.",
+                   text: "Saved me loads at CEX on trade-ins.",
                    author: "Mike T.",
-                   role: "Tech Enthusiast"
+                   role: "Tech User"
                  },
                  {
-                   text: "Incredible for verifying LEGO sets. It identified a missing minifigure just from the box art scan!",
+                   text: "Identified a missing LEGO figure instantly.",
                    author: "David R.",
                    role: "Collector"
                  }
                ].map((t, i) => (
-                 <div key={i} className="bg-game-surface/30 p-6 rounded-2xl border border-white/5 relative hover:-translate-y-1 transition-transform">
-                    <div className="text-game-primary text-4xl font-serif absolute top-4 left-4 opacity-20">"</div>
-                    <p className="text-sm text-game-muted italic mb-4 relative z-10 pt-4 leading-relaxed">{t.text}</p>
-                    <div className="flex items-center gap-3 border-t border-white/5 pt-4">
-                       <div className="h-8 w-8 rounded-full bg-game-primary/20 flex items-center justify-center text-game-primary font-bold text-xs border border-game-primary/30">
+                 <div key={i} className={`bg-game-surface/30 p-5 rounded-2xl border border-white/5 relative min-w-[70vw] md:min-w-0 snap-center ${i===0?'pl-5':''} ${i===2?'pr-5':''}`}>
+                    <div className="text-game-primary text-4xl font-serif absolute top-2 left-3 opacity-20">"</div>
+                    <p className="text-xs md:text-sm text-game-muted italic mb-3 relative z-10 pt-2 leading-relaxed">{t.text}</p>
+                    <div className="flex items-center gap-3 border-t border-white/5 pt-3">
+                       <div className="h-6 w-6 md:h-8 md:w-8 rounded-full bg-game-primary/20 flex items-center justify-center text-game-primary font-bold text-[10px] md:text-xs border border-game-primary/30">
                          {t.author.charAt(0)}
                        </div>
                        <div>
                           <p className="text-xs font-bold text-game-text">{t.author}</p>
-                          <p className="text-[10px] text-game-accent uppercase tracking-wider">{t.role}</p>
+                          <p className="text-[9px] md:text-[10px] text-game-accent uppercase tracking-wider">{t.role}</p>
                        </div>
                     </div>
                  </div>
@@ -202,8 +190,8 @@ const LandingPage = ({ onStart }: { onStart: () => void }) => (
             </div>
         </div>
         
-        <div className="text-center pb-10">
-           <p className="text-xs text-game-muted font-mono opacity-50">v2.2.0 // UK REGION // SECURE</p>
+        <div className="text-center pb-4 md:pb-10">
+           <p className="text-[10px] text-game-muted font-mono opacity-50">v2.2.0 // UK REGION // SECURE</p>
         </div>
     </div>
   </div>
