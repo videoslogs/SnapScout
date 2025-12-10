@@ -8,7 +8,7 @@ import {
   Package, Mail, Plus, Trash2, Edit2, List, RotateCcw, History, FileText, Search,
   Trophy, MessageSquare
 } from './IconComponents';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface ResultsViewProps {
   data: AnalysisResult;
@@ -359,7 +359,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
   const sendFeedback = (type: 'positive' | 'negative') => {
     const subject = type === 'positive' ? 'SnapScout Feedback: Helpful Item!' : 'SnapScout Feedback: Bad Intel';
     const body = `Product ID: ${data.id}\nProduct: ${data.productName}\n\nMy feedback:`;
-    window.location.href = `mailto:videlogs@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:newshade87@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   // Shopping List Handlers
@@ -751,7 +751,13 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
                   <h4 className="text-xs font-bold text-game-text uppercase tracking-widest border-b border-white/5 pb-2 mb-3">Value History (15 Years)</h4>
                   <div className="bg-game-surface/50 rounded-xl p-3 h-40 w-full border border-white/5">
                       <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                          <BarChart data={priceHistory}>
+                          <AreaChart data={priceHistory}>
+                              <defs>
+                                <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#00dfd8" stopOpacity={0.8}/>
+                                  <stop offset="95%" stopColor="#00dfd8" stopOpacity={0}/>
+                                </linearGradient>
+                              </defs>
                               <XAxis 
                                 dataKey="year" 
                                 fontSize={9} 
@@ -759,7 +765,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
                                 tickLine={false} 
                                 axisLine={false} 
                                 dy={5}
-                                interval={2} // Show every 2nd year to avoid clutter
+                                interval={2}
                               />
                               <YAxis 
                                 fontSize={9}
@@ -779,25 +785,18 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
                                     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
                                   }}
                                   itemStyle={{ color: 'var(--game-accent)' }}
-                                  cursor={{fill: 'rgba(255,255,255,0.05)', radius: 4}}
+                                  cursor={{stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1}}
                                   formatter={(value: number) => [`£${value}`, 'Price']}
                               />
-                              <Bar dataKey="price" radius={[4, 4, 4, 4]}>
-                                  {priceHistory.map((entry, index) => (
-                                      <Cell 
-                                        key={`cell-${index}`} 
-                                        fill={index === priceHistory.length - 1 ? '#00dfd8' : '#7928ca'} 
-                                      />
-                                  ))}
-                              </Bar>
-                          </BarChart>
+                              <Area type="monotone" dataKey="price" stroke="#00dfd8" fillOpacity={1} fill="url(#colorPrice)" />
+                          </AreaChart>
                       </ResponsiveContainer>
                   </div>
             </div>
 
-            {/* Complete the Set / Similar Items CAROUSEL */}
+            {/* View Similar Items CAROUSEL */}
             <div>
-                <h4 className="text-xs font-bold text-game-text uppercase tracking-widest border-b border-white/5 pb-2 mb-3">Similar Items</h4>
+                <h4 className="text-xs font-bold text-game-text uppercase tracking-widest border-b border-white/5 pb-2 mb-3">View Similar Items</h4>
                 <div className="flex overflow-x-auto gap-3 pb-4 no-scrollbar snap-x snap-mandatory">
                   {data.relatedProducts.map((item, index) => (
                     <div 
@@ -924,8 +923,18 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
          </div>
       </CollapsibleWidget>
       
+      {/* Share With Friends Button */}
+      <div className="flex justify-center mt-8 mb-4">
+        <button 
+          onClick={handleShare}
+          className="flex items-center gap-2 px-6 py-3 bg-game-surface border border-white/10 hover:border-game-primary/50 rounded-full text-game-text font-bold uppercase tracking-widest hover:bg-game-primary hover:text-white transition-all shadow-lg active:scale-95"
+        >
+            <Share2 size={18} /> Share with Friends
+        </button>
+      </div>
+
       {/* Feedback Section */}
-      <div className="mt-8 pt-8 border-t border-white/5 text-center">
+      <div className="pt-4 border-t border-white/5 text-center">
           <p className="text-xs text-game-muted uppercase font-bold tracking-widest mb-4">Was this mission successful?</p>
           <div className="flex justify-center gap-3">
               <button 
@@ -941,7 +950,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
                   <Mail size={16} /> Report Issue
               </button>
           </div>
-          <p className="text-[10px] text-game-muted mt-4 opacity-50">Feedback sent to videlogs@gmail.com</p>
+          <p className="text-[10px] text-game-muted mt-4 opacity-50">Feedback sent to SnapScout Team</p>
       </div>
 
     </div>

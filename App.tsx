@@ -68,7 +68,7 @@ const LandingPage = ({ onStart }: { onStart: () => void }) => (
                 {/* Step 1: Scan */}
                 <div className="group relative">
                    <div className="absolute inset-0 bg-game-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl"></div>
-                   <div className="bg-game-card border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300">
+                   <div className="bg-game-card border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 text-left">
                        <div className="aspect-[9/16] bg-game-bg rounded-2xl border border-white/10 mb-6 relative overflow-hidden flex flex-col shadow-inner">
                           {/* Mock UI: Camera */}
                           <div className="absolute top-4 inset-x-4 flex justify-between">
@@ -96,7 +96,7 @@ const LandingPage = ({ onStart }: { onStart: () => void }) => (
                 {/* Step 2: Analyze */}
                 <div className="group relative">
                    <div className="absolute inset-0 bg-game-accent/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl"></div>
-                   <div className="bg-game-card border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 delay-100">
+                   <div className="bg-game-card border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 delay-100 text-left">
                        <div className="aspect-[9/16] bg-game-bg rounded-2xl border border-white/10 mb-6 relative overflow-hidden flex flex-col items-center justify-center shadow-inner gap-4 p-6">
                           {/* Mock UI: Analysis */}
                           <div className="w-16 h-16 rounded-full border-2 border-t-game-accent border-r-transparent border-b-game-accent border-l-transparent animate-spin"></div>
@@ -124,7 +124,7 @@ const LandingPage = ({ onStart }: { onStart: () => void }) => (
                 {/* Step 3: Results */}
                 <div className="group relative">
                    <div className="absolute inset-0 bg-game-success/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl"></div>
-                   <div className="bg-game-card border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 delay-200">
+                   <div className="bg-game-card border border-white/10 rounded-3xl p-6 backdrop-blur-sm relative hover:-translate-y-2 transition-transform duration-300 delay-200 text-left">
                        <div className="aspect-[9/16] bg-game-bg rounded-2xl border border-white/10 mb-6 relative overflow-hidden flex flex-col shadow-inner">
                           {/* Mock UI: Results */}
                           <div className="h-1/3 bg-game-surface/30 p-4 flex flex-col justify-end">
