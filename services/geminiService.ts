@@ -105,26 +105,69 @@ const generateId = () => Date.now().toString(36) + Math.random().toString(36).su
 // Retry function with exponential backoff
 async function retryWithBackoff<T>(
   operation: () => Promise<T>,
-  retries: number = 3,
+  retries: number = 5,
   delay: number = 2000
 ): Promise<T> {
   try {
     return await operation();
   } catch (error: any) {
-    // Check for 503 Service Unavailable or "overloaded" message
-    const isOverloaded = 
-      error?.status === 503 || 
-      error?.code === 503 || 
-      (error?.message && error.message.toLowerCase().includes("overloaded"));
+    const msg = error?.message?.toLowerCase() || "";
+    const status = error?.status || error?.code;
 
-    if (retries > 0 && isOverloaded) {
-      console.warn(`Gemini API overloaded. Retrying in ${delay}ms... (Attempts left: ${retries})`);
+    // Check for 503 (Overloaded) or 429 (Quota/Rate Limit)
+    const isRetryable = 
+      status === 503 || 
+      status === 429 || 
+      msg.includes("overloaded") || 
+      msg.includes("quota") ||
+      msg.includes("resource_exhausted") ||
+      msg.includes("too many requests");
+
+    if (retries > 0 && isRetryable) {
+      console.warn(`Gemini API busy (${status}). Retrying in ${delay}ms... (Attempts left: ${retries})`);
       await new Promise((resolve) => setTimeout(resolve, delay));
       return retryWithBackoff(operation, retries - 1, delay * 2);
     }
     throw error;
   }
 }
+
+// Helper to parse and clean error messages
+const handleGeminiError = (error: any): never => {
+    let msg = error?.message || "Unknown error";
+
+    // Attempt to parse JSON error string e.g. '... {"error": ...} ...'
+    if (typeof msg === 'string' && (msg.includes('{') || msg.includes('}'))) {
+        try {
+            const match = msg.match(/(\{.*\})/);
+            if (match) {
+                const parsed = JSON.parse(match[0]);
+                if (parsed.error) {
+                    // Check for specific quota error
+                    if (parsed.error.code === 429 || parsed.error.status === "RESOURCE_EXHAUSTED") {
+                        throw new Error("Usage limit reached (Free Tier). Please wait 60s and try again.");
+                    }
+                    if (parsed.error.message) {
+                        throw new Error(parsed.error.message);
+                    }
+                }
+            }
+        } catch (e) {
+            // parsing failed, fall through
+        }
+    }
+    
+    // Fallback text checks
+    if (msg.includes("429") || msg.toLowerCase().includes("quota") || msg.toLowerCase().includes("resource_exhausted")) {
+        throw new Error("Usage limit reached. Please wait a minute before scanning again.");
+    }
+    
+    if (msg.includes("503") || msg.toLowerCase().includes("overloaded")) {
+        throw new Error("System overloaded. Retrying usually fixes this.");
+    }
+
+    throw error;
+};
 
 export const analyzeImage = async (base64Image: string, mimeType: string = "image/jpeg", isBarcode: boolean = false): Promise<AnalysisResult> => {
   const ai = getGenAI();
@@ -190,7 +233,7 @@ export const analyzeImage = async (base64Image: string, mimeType: string = "imag
     } as AnalysisResult;
   } catch (error) {
     console.error("Gemini Analysis Error:", error);
-    throw error;
+    handleGeminiError(error);
   }
 };
 
@@ -235,6 +278,6 @@ export const analyzeText = async (query: string): Promise<AnalysisResult> => {
       } as AnalysisResult;
     } catch (error) {
       console.error("Gemini Text Analysis Error:", error);
-      throw error;
+      handleGeminiError(error);
     }
   };
