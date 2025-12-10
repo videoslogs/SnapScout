@@ -158,6 +158,49 @@ const LandingPage = ({ onStart }: { onStart: () => void }) => (
                 </div>
             </div>
         </div>
+
+        {/* Testimonials Section */}
+        <div className="space-y-8 pb-12">
+            <div className="flex items-center justify-center gap-4 opacity-70">
+                <div className="h-px bg-white/20 w-12"></div>
+                <span className="text-xs font-bold uppercase tracking-[0.2em] text-game-muted">Field Reports</span>
+                <div className="h-px bg-white/20 w-12"></div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+               {[
+                 {
+                   text: "Found a rare vintage camera for £20 at a boot sale. SnapScout said it was worth £150. Sold it next day!",
+                   author: "Sarah J.",
+                   role: "Reseller"
+                 },
+                 {
+                   text: "I use this in CEX all the time to check if trade-in prices are fair. Saved me loads.",
+                   author: "Mike T.",
+                   role: "Tech Enthusiast"
+                 },
+                 {
+                   text: "Incredible for verifying LEGO sets. It identified a missing minifigure just from the box art scan!",
+                   author: "David R.",
+                   role: "Collector"
+                 }
+               ].map((t, i) => (
+                 <div key={i} className="bg-game-surface/30 p-6 rounded-2xl border border-white/5 relative hover:-translate-y-1 transition-transform">
+                    <div className="text-game-primary text-4xl font-serif absolute top-4 left-4 opacity-20">"</div>
+                    <p className="text-sm text-game-muted italic mb-4 relative z-10 pt-4 leading-relaxed">{t.text}</p>
+                    <div className="flex items-center gap-3 border-t border-white/5 pt-4">
+                       <div className="h-8 w-8 rounded-full bg-game-primary/20 flex items-center justify-center text-game-primary font-bold text-xs border border-game-primary/30">
+                         {t.author.charAt(0)}
+                       </div>
+                       <div>
+                          <p className="text-xs font-bold text-game-text">{t.author}</p>
+                          <p className="text-[10px] text-game-accent uppercase tracking-wider">{t.role}</p>
+                       </div>
+                    </div>
+                 </div>
+               ))}
+            </div>
+        </div>
         
         <div className="text-center pb-10">
            <p className="text-xs text-game-muted font-mono opacity-50">v2.2.0 // UK REGION // SECURE</p>
@@ -317,6 +360,14 @@ function App() {
     setErrorMsg(null);
   };
 
+  const handleGoHome = () => {
+    setLoadingState(LoadingState.IDLE);
+    setAnalysisResult(null);
+    setImagePreview(null);
+    setErrorMsg(null);
+    setShowLanding(true);
+  };
+
   if (apiKeyMissing) {
     return (
       <div className="min-h-screen bg-game-bg flex items-center justify-center p-4">
@@ -357,7 +408,7 @@ function App() {
           </div>
           
           {/* Center: Logo */}
-          <div className="flex flex-col items-center justify-center cursor-pointer group" onClick={handleReset}>
+          <div className="flex flex-col items-center justify-center cursor-pointer group" onClick={handleGoHome}>
             <span className="font-black text-xl tracking-tighter text-game-text leading-none group-hover:scale-105 transition-transform">
               SNAP<span className="text-transparent bg-clip-text bg-gradient-to-r from-game-primary to-game-accent">SCOUT</span>
             </span>

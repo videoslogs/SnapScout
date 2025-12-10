@@ -107,9 +107,10 @@ export const analyzeImage = async (base64Image: string, mimeType: string = "imag
   try {
     const prompt = isBarcode 
       ? `You are a barcode scanner and product expert. 
-         1. Read the barcode in the image if present. 
-         2. Identify the EXACT product associated with this barcode or the product in the image.
-         3. Provide details for a UK-based CONSUMER (not wholesale).
+         1. SCAN the image for any barcode (UPC, EAN, ISBN, QR).
+         2. EXTRACT the digits if visible.
+         3. Identify the EXACT product associated with this barcode.
+         4. Provide details for a UK-based CONSUMER (not wholesale).
          
          Gamification Mode: On.
          - Assign a Rarity Tier.

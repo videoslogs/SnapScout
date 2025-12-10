@@ -221,11 +221,11 @@ export const Scanner: React.FC<ScannerProps> = ({ onImageSelect, onTextSearch, i
                 {/* Barcode Scan Button */}
                 <button 
                   onClick={() => barcodeInputRef.current?.click()}
-                  className="flex items-center gap-2 bg-game-surface border border-white/10 hover:border-game-accent hover:bg-game-bg px-3 rounded-xl text-game-muted hover:text-game-text transition-all active:scale-95 group/barcode relative overflow-hidden"
+                  className="flex items-center gap-2 bg-game-surface border border-white/10 hover:border-game-accent hover:bg-game-bg px-2.5 py-2 rounded-xl text-game-muted hover:text-game-text transition-all active:scale-95 group/barcode relative overflow-hidden shrink-0"
                   title="Scan Barcode"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover/barcode:animate-shimmer pointer-events-none"></div>
-                  <Barcode size={22} className="group-hover/barcode:text-game-accent" />
+                  <Barcode size={18} className="group-hover/barcode:text-game-accent" />
                 </button>
                 <input 
                   type="file" 
