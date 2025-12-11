@@ -183,7 +183,7 @@ const handleGeminiError = (error: any): never => {
 
 export const analyzeImage = async (base64Image: string, mimeType: string = "image/jpeg", isBarcode: boolean = false): Promise<AnalysisResult> => {
   const ai = getGenAI();
-  const modelId = "gemini-1.5-flash";
+  const modelId = "gemini-2.0-flash";
 
   try {
     const prompt = isBarcode 
@@ -251,7 +251,7 @@ export const analyzeImage = async (base64Image: string, mimeType: string = "imag
 
 export const analyzeText = async (query: string): Promise<AnalysisResult> => {
     const ai = getGenAI();
-    const modelId = "gemini-1.5-flash";
+    const modelId = "gemini-2.0-flash";
   
     try {
       const response = await retryWithBackoff<GenerateContentResponse>(() => ai.models.generateContent({
