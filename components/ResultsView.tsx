@@ -28,7 +28,8 @@ const RARITY_COLORS: Record<RarityTier, string> = {
 };
 
 const generateMockHistory = (currentPriceStr: string) => {
-  const current = parseFloat(currentPriceStr.replace(/[^0-9.]/g, '')) || 50;
+  const safePriceStr = currentPriceStr || "£50";
+  const current = parseFloat(safePriceStr.replace(/[^0-9.]/g, '')) || 50;
   const currentYear = new Date().getFullYear();
   const history = [];
   
@@ -145,7 +146,7 @@ const RetailerRow: React.FC<{ retailer: RetailerPrice; isCheapest: boolean }> = 
                       className="w-6 h-6 object-contain opacity-80" 
                     />
                 ) : (
-                    <span className="uppercase text-game-muted">{retailer.retailer.substring(0, 1)}</span>
+                    <span className="uppercase text-game-muted">{retailer.retailer?.substring(0, 1) || '?'}</span>
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -244,7 +245,7 @@ interface ShoppingItem {
 }
 
 export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, onReset, onSave, isSaved }) => {
-  const priceHistory = useMemo(() => generateMockHistory(data.retailers[0]?.price || "£50"), [data]);
+  const priceHistory = useMemo(() => generateMockHistory(data.retailers?.[0]?.price || "£50"), [data]);
   const [animatedPrice, setAnimatedPrice] = useState(0);
   
   // Calculator State
@@ -277,7 +278,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
 
   // Parse Price to separate brackets if present (e.g. "£2.45 (for 6)")
   const { priceDisplay, priceSuffix } = useMemo(() => {
-    const val = data.estimatedValueRange;
+    const val = data.estimatedValueRange || "£0.00";
     // Look for bracketed text like "(for 6)" or "(per kg)"
     const bracketIndex = val.indexOf('(');
     if (bracketIndex !== -1) {
@@ -321,7 +322,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
 
   // Filter retailers with valid links (length check)
   const validRetailers = useMemo(() => {
-    return data.retailers.filter(r => r.url && r.url.length > 5);
+    return (data.retailers || []).filter(r => r.url && r.url.length > 5);
   }, [data.retailers]);
 
   // Find cheapest retailer
@@ -330,7 +331,9 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
     let minPrice = Infinity;
     let minIndex = -1;
     validRetailers.forEach((r, idx) => {
-      const price = parseFloat(r.price.replace(/[^0-9.]/g, ''));
+      if (!r.price) return; // Skip if price is missing
+      const priceStr = String(r.price); // Ensure string
+      const price = parseFloat(priceStr.replace(/[^0-9.]/g, ''));
       if (!isNaN(price) && price < minPrice) {
         minPrice = price;
         minIndex = idx;
@@ -344,7 +347,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
   const winnerFavicon = winnerDomain ? `https://www.google.com/s2/favicons?domain=${winnerDomain}&sz=128` : null;
 
   const bestPriceValue = cheapestRetailerIndex !== -1 
-    ? parseFloat(validRetailers[cheapestRetailerIndex].price.replace(/[^0-9.]/g, '')) 
+    ? parseFloat(String(validRetailers[cheapestRetailerIndex].price).replace(/[^0-9.]/g, '')) 
     : 0;
     
   // Initialize editable unit price
@@ -365,6 +368,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
 
   // Animate Market Value appearance
   useEffect(() => {
+    if (!data.estimatedValueRange) return;
     const match = data.estimatedValueRange.match(/[\d.]+/);
     if (match) {
       const target = parseFloat(match[0]);
@@ -660,10 +664,10 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
                      <span className="flex items-center gap-1 text-game-success">
                         <Zap size={8} fill="currentColor" /> {data.confidenceScore}% Confidence
                      </span>
-                     {data.specs.releaseYear && (
+                     {data.specs && data.specs.releaseYear && (
                        <span className="text-game-muted/50">•</span>
                      )}
-                     {data.specs.releaseYear && (
+                     {data.specs && data.specs.releaseYear && (
                        <span>
                          EST. {data.specs.releaseYear}
                        </span>
@@ -769,7 +773,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
                           <Shield size={12} /> Buffs
                        </h3>
                        <ul className="space-y-1.5">
-                          {data.pros.slice(0,3).map((pro, i) => (
+                          {(data.pros || []).slice(0,3).map((pro, i) => (
                              <li key={i} className="text-[11px] text-game-muted flex items-start gap-1.5 leading-tight">
                                 <span className="text-game-success font-bold">+</span> {pro}
                              </li>
@@ -781,7 +785,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
                           <Sword size={12} /> Debuffs
                        </h3>
                        <ul className="space-y-1.5">
-                          {data.cons.slice(0,3).map((con, i) => (
+                          {(data.cons || []).slice(0,3).map((con, i) => (
                              <li key={i} className="text-[11px] text-game-muted flex items-start gap-1.5 leading-tight">
                                 <span className="text-game-primary font-bold">-</span> {con}
                              </li>
@@ -795,7 +799,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
              <div>
                   <h4 className="text-xs font-bold text-game-text uppercase tracking-widest border-b border-white/5 pb-2 mb-3">Attributes</h4>
                   <div className="grid grid-cols-2 gap-2">
-                      {Object.entries(data.specs).map(([key, value]) => value && (
+                      {data.specs && Object.entries(data.specs).map(([key, value]) => value && (
                           <div key={key} className="bg-game-bg/50 p-2 rounded-xl border border-white/5 overflow-hidden">
                               <p className="text-[9px] text-game-muted uppercase tracking-wider mb-0.5 opacity-70 break-words">{key}</p>
                               <p className="text-game-text font-bold text-xs truncate">{value}</p>
@@ -856,7 +860,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ data, imagePreview, on
             <div>
                 <h4 className="text-xs font-bold text-game-text uppercase tracking-widest border-b border-white/5 pb-2 mb-3">View Similar Items</h4>
                 <div className="flex overflow-x-auto gap-3 pb-4 no-scrollbar snap-x snap-mandatory">
-                  {data.relatedProducts.map((item, index) => (
+                  {(data.relatedProducts || []).map((item, index) => (
                     <SimilarProductCard 
                       key={index} 
                       item={item} 
